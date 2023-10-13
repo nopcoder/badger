@@ -25,6 +25,7 @@ import (
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/dgraph-io/badger/v4/pb"
 	"github.com/dgraph-io/badger/v4/y"
@@ -122,7 +123,6 @@ func (st *Stream) ToList(key []byte, itr *Iterator) (*pb.KVList, error) {
 		if err := item.Value(func(val []byte) error {
 			kv.Value = a.Copy(val)
 			return nil
-
 		}); err != nil {
 			return nil, err
 		}
@@ -477,7 +477,7 @@ func BufferToKVList(buf *z.Buffer) (*pb.KVList, error) {
 	var list pb.KVList
 	err := buf.SliceIterate(func(s []byte) error {
 		kv := new(pb.KV)
-		if err := kv.Unmarshal(s); err != nil {
+		if err := proto.Unmarshal(s, kv); err != nil {
 			return err
 		}
 		list.Kv = append(list.Kv, kv)
@@ -487,6 +487,6 @@ func BufferToKVList(buf *z.Buffer) (*pb.KVList, error) {
 }
 
 func KVToBuffer(kv *pb.KV, buf *z.Buffer) {
-	out := buf.SliceAllocate(kv.Size())
-	y.Check2(kv.MarshalToSizedBuffer(out))
+	out := buf.SliceAllocate(proto.Size(kv))
+	y.Check2(proto.MarshalOptions{}.MarshalAppend(out[:0], kv))
 }

@@ -31,10 +31,10 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/klauspost/compress/snappy"
 	"github.com/klauspost/compress/zstd"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/dgraph-io/badger/v4/fb"
 	"github.com/dgraph-io/badger/v4/options"
@@ -44,8 +44,10 @@ import (
 	"github.com/dgraph-io/ristretto/z"
 )
 
-const fileSuffix = ".sst"
-const intSize = int(unsafe.Sizeof(int(0)))
+const (
+	fileSuffix = ".sst"
+	intSize    = int(unsafe.Sizeof(int(0)))
+)
 
 // Options contains configurable options for Table/Builder.
 type Options struct {
@@ -222,6 +224,7 @@ func (b *block) incrRef() bool {
 		}
 	}
 }
+
 func (b *block) decrRef() {
 	if b == nil {
 		return
@@ -242,6 +245,7 @@ func (b *block) decrRef() {
 	}
 	y.AssertTrue(b.ref.Load() >= 0)
 }
+
 func (b *block) size() int64 {
 	return int64(3*intSize /* Size of the offset, entriesIndexStart and chkLen */ +
 		cap(b.data) + cap(b.checksum) + cap(b.entryOffsets)*4)

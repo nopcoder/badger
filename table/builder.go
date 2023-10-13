@@ -24,10 +24,10 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
 	fbs "github.com/google/flatbuffers/go"
 	"github.com/klauspost/compress/s2"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/dgraph-io/badger/v4/fb"
 	"github.com/dgraph-io/badger/v4/options"
@@ -586,7 +586,8 @@ func (b *Builder) writeBlockOffsets(builder *fbs.Builder) ([]fbs.UOffsetT, uint3
 // writeBlockOffset writes the given key,offset,len triple to the indexBuilder.
 // It returns the offset of the newly written blockoffset.
 func (b *Builder) writeBlockOffset(
-	builder *fbs.Builder, bl *bblock, startOffset uint32) fbs.UOffsetT {
+	builder *fbs.Builder, bl *bblock, startOffset uint32,
+) fbs.UOffsetT {
 	// Write the key to the buffer.
 	k := builder.CreateByteVector(bl.baseKey)
 
